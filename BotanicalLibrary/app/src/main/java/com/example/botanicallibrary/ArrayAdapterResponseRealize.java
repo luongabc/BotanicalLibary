@@ -1,5 +1,6 @@
 package com.example.botanicallibrary;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ public class ArrayAdapterResponseRealize extends ArrayAdapter<DataListViewRespon
         super(context, resource, objects);
     }
 
+    @SuppressLint({"InflateParams", "SetTextI18n"})
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -31,7 +33,7 @@ public class ArrayAdapterResponseRealize extends ArrayAdapter<DataListViewRespon
         if(convertView==null){
             LayoutInflater layoutInflater=LayoutInflater.from(getContext());
             convertView=layoutInflater.inflate(R.layout.activity_card_response_realize,null);
-            viewHolder=new ViewHolder();
+            viewHolder= new ViewHolder();
             viewHolder.imageView=convertView.findViewById(R.id.iVImageResponse);
             viewHolder.tVName=convertView.findViewById(R.id.tVName);
             viewHolder.tVScore=convertView.findViewById(R.id.tVScore);
@@ -42,13 +44,15 @@ public class ArrayAdapterResponseRealize extends ArrayAdapter<DataListViewRespon
         }
         DataListViewResponseRealize resultRealizePlant=getItem(position);
         if(resultRealizePlant!=null){
-            viewHolder.tVScore.setText("Score: "+resultRealizePlant.getScore().toString());
+            viewHolder.tVScore.setText("Score: "+ resultRealizePlant.getScore());
             viewHolder.tVName.setText(resultRealizePlant.getName());
             if(resultRealizePlant.getUrl()!=null) Picasso.with(getContext()).load(resultRealizePlant.getUrl()).fit().centerCrop().into(viewHolder.imageView);
         }
         return convertView;
     }
-    private class ViewHolder{
+
+
+    private static class ViewHolder{
         public ImageView imageView;
         public TextView tVName,tVScore;
     }
