@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 public class DataListViewResponseRealize implements Serializable {
     private String url,name,score,gbif;
-
     public String getGbif() {
         return gbif;
     }

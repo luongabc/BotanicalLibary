@@ -16,7 +16,8 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface RetrofitAPI {
-
+    String MY_API_PLANT="https://my-api.plantnet.org/v2/identify/";
+    String GBIF="https://api.gbif.org/";
     //plantNet
     @Multipart
     @POST("all?api-key=2a10uHE2Tk4h0wuQSvnDAdPp")
@@ -42,7 +43,7 @@ public interface RetrofitAPI {
     //Gbif
     //get media
     @GET("v1/species/{key}/media")
-    Call<ResponseGbifMedia> getMedia(@Path("key") String key,@Query("limit") String limit,@Query("offset") String offset);
+    Call<ResponseGbifMedia> getMedia(@Path("key") String key,@Query("limit") int limit,@Query("offset") int offset);
 
 
 }
