@@ -16,7 +16,7 @@
 
     <style name="Theme.BotanicalLibrary.Fullscreen" parent="Theme.BotanicalLibrary">
         <item name="android:actionBarStyle">
-            @style/Widget.Theme.BotanicalLibrary.ActionBar.Fullscreen
+            @style/MyTheme
         </item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowBackground">@null</item>

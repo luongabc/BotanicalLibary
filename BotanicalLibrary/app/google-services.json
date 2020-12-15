@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "201012427301",
+    "firebase_url": "https://botanicallibrary-default-rtdb.firebaseio.com",
+    "project_id": "botanicallibrary",
+    "storage_bucket": "botanicallibrary.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:201012427301:android:90371e75abcac079459dcc",
+        "android_client_info": {
+          "package_name": "com.example.botanicallibrary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "201012427301-maqpppp5tktph9ip2h2idpdes429pb9q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_nF3PX9k9YD9I6wZ0FsrwUJJoZ-vOdZI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "201012427301-maqpppp5tktph9ip2h2idpdes429pb9q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

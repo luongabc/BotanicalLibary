@@ -3,6 +3,8 @@ package com.example.botanicallibrary.Interface;
 
 import com.example.botanicallibrary.en.response.ResponseDataPost;
 import com.example.botanicallibrary.en.response.ResponseGbifMedia;
+import com.example.botanicallibrary.en.response.ResponseSpecie;
+import com.example.botanicallibrary.en.response.demosetdata.ResponseSetData;
 
 
 import okhttp3.MultipartBody;
@@ -45,5 +47,11 @@ public interface RetrofitAPI {
     @GET("v1/species/{key}/media")
     Call<ResponseGbifMedia> getMedia(@Path("key") String key,@Query("limit") int limit,@Query("offset") int offset);
 
+    //get
+    @GET("v1/species/{key}")
+    Call<ResponseSpecie> getGbif(@Path("key") String key);
 
+    //test Data
+    @GET("v1/species/search")
+    Call<ResponseSetData> searchGbif(@Query("rank") String rank, @Query("limit") int limit, @Query("offset") int offset);
 }
