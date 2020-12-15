@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.example.botanicallibrary.R;
+import com.example.botanicallibrary.fragment.BotanicalDescriptionFragment;
+import com.example.botanicallibrary.fragment.LibraryFragment;
 import com.example.botanicallibrary.fragment.RealizePlantFragment;
 
 public class ScreenMain extends AppCompatActivity {
@@ -24,14 +26,27 @@ public class ScreenMain extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         imageViewRealize=findViewById(R.id.realizePlant);
-        ImageView imgload=findViewById(R.id.imgload);
-        imgload.setVisibility(View.GONE);
+        ImageView library =findViewById(R.id.libraryPlant);
+        getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .add(R.id.fragment, LibraryFragment.class,null)
+                .commit();
+
         imageViewRealize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getSupportFragmentManager().beginTransaction()
                         .setReorderingAllowed(true)
                         .replace(R.id.fragment, RealizePlantFragment.class,null)
+                        .commit();
+            }
+        });
+        library.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getSupportFragmentManager().beginTransaction()
+                        .setReorderingAllowed(true)
+                        .replace(R.id.fragment, LibraryFragment.class,null)
                         .commit();
             }
         });

@@ -1,4 +1,4 @@
-package com.example.botanicallibrary;
+package com.example.botanicallibrary.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 
+import com.example.botanicallibrary.R;
 import com.example.botanicallibrary.en.PlantPost;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class ListArrayAdapter extends ArrayAdapter<PlantPost> {
         if(convertView==null){
             LayoutInflater li;
             li=LayoutInflater.from(getContext());
-            convertView=li.inflate(R.layout.activity_card_plant,null);
+            convertView=li.inflate(R.layout.layout_card_plant,null);
             v=new ViewHolder() ;
 
             v.imageView=convertView.findViewById(R.id.imageView2);

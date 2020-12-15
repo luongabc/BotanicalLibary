@@ -18,7 +18,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.botanicallibrary.Interface.RetrofitAPI;
-import com.example.botanicallibrary.ListArrayAdapter;
+import com.example.botanicallibrary.bl.Data;
+import com.example.botanicallibrary.bl.LoadingDialog;
 import com.example.botanicallibrary.R;
 import com.example.botanicallibrary.ResponseRealizeActivity;
 import com.example.botanicallibrary.SelectImage;
@@ -26,13 +27,17 @@ import com.example.botanicallibrary.bl.Permission;
 import com.example.botanicallibrary.en.DataListViewResponseRealize;
 import com.example.botanicallibrary.en.PlantPost;
 import com.example.botanicallibrary.en.response.ResponseDataPost;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import okhttp3.MediaType;
@@ -46,7 +51,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RealizePlantFragment extends Fragment {
     private final int REQUEST_CODE_GET_IMAGE=1;
-
+    private LoadingDialog loadingDialog;
     private ArrayList<PlantPost> plantPosts;
     private ListArrayAdapter plantPostListArrayAdapter;
 
@@ -79,13 +84,13 @@ public class RealizePlantFragment extends Fragment {
         Button btnRealize = view.findViewById(R.id.btn_search_plant);
         plantPosts=new ArrayList<>();
 
-        plantPostListArrayAdapter=new ListArrayAdapter(requireContext(),R.layout.activity_card_plant, plantPosts);
+        loadingDialog=new LoadingDialog(getActivity());
+        plantPostListArrayAdapter=new ListArrayAdapter(requireContext(),R.layout.layout_card_plant, plantPosts);
         listViewPlantPost.setAdapter(plantPostListArrayAdapter);
 
         btnRealize.setOnClickListener(v -> {
             if(plantPosts.size()!=0 && checkNullListPost()){
-                btnRealize.setVisibility(View.GONE);
-                btnAddImage.setVisibility(View.GONE);
+                loadingDialog.startDialog();
                 RealizePlant(plantPosts);
             }
             else {
@@ -115,6 +120,7 @@ public class RealizePlantFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
     }
 
     @Override
@@ -134,6 +140,7 @@ public class RealizePlantFragment extends Fragment {
 
             }
         }
+
     }
     protected void RealizePlant(ArrayList<PlantPost>  plantPosts){
         List<MultipartBody.Part> fileToUploads=new ArrayList<>();
@@ -181,12 +188,14 @@ public class RealizePlantFragment extends Fragment {
                             , response.body().getResultRealizePlants().get(i).getSpecies().getScientificNameWithoutAuthor()
                             , response.body().getResultRealizePlants().get(i).getScore().toString()
                             , response.body().getResultRealizePlants().get(i).getGbif().getId()));
+                    Data.getSpecies(response.body().getResultRealizePlants().get(i).getGbif().getId());
                 }
                 Intent intent = new Intent(getContext(), ResponseRealizeActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("responseRealize", (Serializable) dataListViewResponseRealizes);
                 intent.putExtras(bundle);
                 startActivity(intent);
+                loadingDialog.dismissDialog();
             }
             @Override
             public void onFailure(@NotNull Call<ResponseDataPost> call, @NotNull Throwable t) {

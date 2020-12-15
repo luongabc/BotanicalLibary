@@ -28,6 +28,7 @@
             android:id="@+id/Flower"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/purple_700"
             android:text="@string/flower" />
 
         <Button
@@ -67,6 +68,7 @@
         android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        app:srcCompat="@drawable/icondelete_48" />
+        app:srcCompat="@drawable/icondelete_48"
+        android:contentDescription="TODO" />
 
 </LinearLayout>

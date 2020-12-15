@@ -70,10 +70,13 @@ public class ListImageFragment extends Fragment {
             @Override
             public void onResponse(@NotNull Call<ResponseGbifMedia> call, @NotNull Response<ResponseGbifMedia> response) {
                 if (!response.isSuccessful()) return;
-                for (int i = 0; i < Objects.requireNonNull(response.body()).getResults().size() / sizeCols; i++) {
+                int mod=Objects.requireNonNull(response.body()).getResults().size() % sizeCols;
+                int rows=Objects.requireNonNull(response.body()).getResults().size() / sizeCols;
+                if(mod==0) rows--;
+                for (int i = 0; i <= rows; i++) {
                     TableRow tableRow = new TableRow(tableLayout.getContext());
                     for (int col = 0; col < sizeCols; col++) {
-                        if (i * sizeCols + col >= response.body().getResults().size()) return;
+                        if (i * sizeCols + col >= response.body().getResults().size()) break;
                         ImageView imageView = new ImageView(tableLayout.getContext());
                         Picasso.with(getContext())
                                 .load(response.body().getResults().get(i * sizeCols + col).getIdentifier())
