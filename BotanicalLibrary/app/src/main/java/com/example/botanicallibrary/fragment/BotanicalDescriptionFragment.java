@@ -67,6 +67,7 @@ public class BotanicalDescriptionFragment extends Fragment {
                         }
                     }
                 });
+
         return v;
     }
 }

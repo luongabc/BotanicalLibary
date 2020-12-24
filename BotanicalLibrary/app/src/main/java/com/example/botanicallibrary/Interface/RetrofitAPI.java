@@ -1,6 +1,7 @@
 package com.example.botanicallibrary.Interface;
 
 
+import com.example.botanicallibrary.en.Rss.RssFeed;
 import com.example.botanicallibrary.en.response.ResponseDataPost;
 import com.example.botanicallibrary.en.response.ResponseGbifMedia;
 import com.example.botanicallibrary.en.response.ResponseSpecie;
@@ -20,6 +21,9 @@ import retrofit2.http.Query;
 public interface RetrofitAPI {
     String MY_API_PLANT="https://my-api.plantnet.org/v2/identify/";
     String GBIF="https://api.gbif.org/";
+    String RSSURL="http://ccttbvtvbinhduong.gov.vn/rssChanel/";
+
+
     //plantNet
     @Multipart
     @POST("all?api-key=2a10uHE2Tk4h0wuQSvnDAdPp")
@@ -54,4 +58,8 @@ public interface RetrofitAPI {
     //test Data
     @GET("v1/species/search")
     Call<ResponseSetData> searchGbif(@Query("rank") String rank, @Query("limit") int limit, @Query("offset") int offset);
+
+    //Rss
+    @GET("tin-moi-nhat.rss")
+    Call<RssFeed> getFeed();
 }

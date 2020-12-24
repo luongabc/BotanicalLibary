@@ -1,83 +1,80 @@
 package com.example.botanicallibrary.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.botanicallibrary.BitanicalDetailActivity;
-import com.example.botanicallibrary.Interface.ILoadMore;
 import com.example.botanicallibrary.Interface.ItemClickListener;
+import com.example.botanicallibrary.NewsActivity;
 import com.example.botanicallibrary.R;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.example.botanicallibrary.en.Rss.RssItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHolder> {
+public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     private Context mContext;
     private RecyclerView recyclerView;
-    private List<QueryDocumentSnapshot> itemViewModels;
+    private List<RssItem> itemViewModels;
 
-    public LibraryAdapter(RecyclerView recyclerView, Context mContext, List<QueryDocumentSnapshot> itemViewModels) {
+    public NewsAdapter(Context mContext, RecyclerView recyclerView, List<RssItem> itemViewModels) {
         this.mContext = mContext;
+        this.recyclerView = recyclerView;
         this.itemViewModels = itemViewModels;
-        this.recyclerView=recyclerView;
     }
-
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater=LayoutInflater.from(mContext);
-        View v=layoutInflater.inflate(R.layout.layout_library_item,parent,false);
-        return new ViewHolder(v);
+        View v=layoutInflater.inflate(R.layout.layout_news_item,parent,false);
+        return new NewsAdapter.ViewHolder(v);
     }
+
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-        if(itemViewModels.get(position)==null) {
-            holder.textView.setText(null);
-            holder.imageView.getLayoutParams().height=recyclerView.getWidth()/2;
-            holder.imageView.setImageDrawable(null);
-            return;
-        }
-        String nameVi=(String)itemViewModels.get(position).get("name");
-        String url=(String)itemViewModels.get(position).get("imgBackground");
-        if(nameVi==null)  nameVi=(String)itemViewModels.get(position).get("default");
-        holder.textView.setText(nameVi);
-        holder.imageView.getLayoutParams().height=recyclerView.getWidth()/2;
-        Picasso.with(mContext).load(url).fit().into(holder.imageView);
+        holder.name.setText(itemViewModels.get(position).getTitle());
+        holder.date.setText(itemViewModels.get(position).getPubDate());
+        Picasso.with(mContext).load(itemViewModels.get(position).getImage()).placeholder(R.drawable.icon_add_image_96).fit().centerCrop().into(holder.imageView);
+        if(position%2==0) holder.ll_layout.setBackgroundColor(R.color.gray_400);
         holder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position, boolean isLongClick) {
                 if(itemViewModels.size()>1) {
-                    String key = itemViewModels.get(position).getId();
-                    if(key==null) return;
-                    Intent intent = new Intent(view.getContext(), BitanicalDetailActivity.class);
-                    intent.putExtra("key", key);
+                    String url = itemViewModels.get(position).getLink();
+                    if(url==null) return;
+                    Intent intent = new Intent(view.getContext(), NewsActivity.class);
+                    intent.putExtra("URL", url);
                     view.getContext().startActivity(intent);
                 }
             }
         });
-    }
 
+
+    }
 
     @Override
     public int getItemCount() {
         return itemViewModels.size();
     }
 
-    protected static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
-        public ImageView imageView;
-        public TextView textView;
+    protected class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
+        private ImageView imageView;
+        private TextView name, date;
+        private LinearLayout ll_layout;
+
+        private ItemClickListener itemClickListener;
 
         public ItemClickListener getItemClickListener() {
             return itemClickListener;
@@ -87,14 +84,13 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
             this.itemClickListener = itemClickListener;
         }
 
-        private ItemClickListener itemClickListener;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView=itemView.findViewById(R.id.image);
-            textView=itemView.findViewById(R.id.name);
-
+            this.imageView=itemView.findViewById(R.id.img_new);
+            this.name=itemView.findViewById(R.id.name_news);
+            this.date=itemView.findViewById(R.id.time_news);
+            this.ll_layout=itemView.findViewById(R.id.ll_layout);
             itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -108,7 +104,4 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
             return false;
         }
     }
-
-
-
 }

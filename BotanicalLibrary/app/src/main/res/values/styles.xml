@@ -3,11 +3,17 @@
     <style name="SuperCoolAppBarActivity" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:background">@color/black_overlay</item>
     </style>
+
     <style name="MyTheme" parent="android:style/Theme.Black">
         <item name="android:windowNoTitle">true</item>
     </style>
+
     <style name="Widget.Theme.BotanicalLibrary.ButtonBar.Fullscreen" parent="">
         <item name="android:background">@color/black_overlay</item>
         <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
+    </style>
+
+    <style name="Widget.Theme.BotanicalLibrary.ActionBar.Fullscreen" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/black_overlay</item>
     </style>
 </resources>
