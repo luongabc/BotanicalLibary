@@ -13,11 +13,13 @@
 
         <ImageButton
             android:id="@+id/addImage"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="28dp"
             android:layout_marginBottom="16dp"
-            android:background="@drawable/icon_add_image_96"
+            android:background="@android:drawable/ic_input_add"
+            android:backgroundTint="#4DA500"
+            android:contentDescription="@string/img"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

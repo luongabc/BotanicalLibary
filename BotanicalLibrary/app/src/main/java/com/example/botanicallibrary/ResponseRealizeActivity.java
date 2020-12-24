@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ListView;
 
+import com.example.botanicallibrary.Interface.IResponseSpecie;
 import com.example.botanicallibrary.Interface.RetrofitAPI;
 import com.example.botanicallibrary.en.DataListViewResponseRealize;
 import com.example.botanicallibrary.en.response.ResponseGbifMedia;
@@ -75,7 +76,7 @@ public class ResponseRealizeActivity extends AppCompatActivity {
 
 
     }
-    protected void GetUrlImage( DataListViewResponseRealize dataListViewResponseRealize){
+    protected void GetUrlImage(DataListViewResponseRealize dataListViewResponseRealize){
         RetrofitAPI getGbif =new Retrofit.Builder()
                 .baseUrl(RetrofitAPI.GBIF)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -101,47 +102,8 @@ public class ResponseRealizeActivity extends AppCompatActivity {
             public void onResponse(@NotNull Call<ResponseSpecie> call, @NotNull Response<ResponseSpecie> response) {
                 if (!response.isSuccessful() || response.body()==null ) return;
                 assert response.body() != null;
-                FirebaseFirestore firebaseFirestore= FirebaseFirestore.getInstance();
-                Map<String,Object> data=new HashMap<>();
+                pust(response.body());
 
-                data.put("parentKey",response.body().getParentKey());
-                firebaseFirestore.collection("Botanicals")
-                        .document(String.valueOf(response.body().getKey()))
-                        .set(data, SetOptions.merge());
-                data.clear();
-
-                data.put("defaul",response.body().getGenus());
-                data.put("parentKey",response.body().getFamilyKey());
-                firebaseFirestore.collection("Genus")
-                        .document(String.valueOf(response.body().getGenusKey()))
-                        .set(data, SetOptions.merge());
-                data.clear();
-
-                data.put("parentKey",response.body().getOrderKey());
-                data.put("defaul",response.body().getFamily());
-                firebaseFirestore.collection("Familys")
-                        .document(String.valueOf(response.body().getFamilyKey()))
-                        .set(data, SetOptions.merge());
-                data.clear();
-
-                data.put("defaul",response.body().getOrder());
-                data.put("parentKey",response.body().getPhylumKey());
-                firebaseFirestore.collection("Orders")
-                        .document(String.valueOf(response.body().getOrderKey()))
-                        .set(data, SetOptions.merge());
-
-
-                data.put("defaul",response.body().getPhylum());
-                data.put("parentKey",response.body().getClassKey());
-                firebaseFirestore.collection("Phylums")
-                        .document(String.valueOf(response.body().getParentKey()))
-                        .set(data, SetOptions.merge());
-                data.clear();
-
-                data.put("defaul",response.body().getClass_());
-                firebaseFirestore.collection("Classes")
-                        .document(String.valueOf(response.body().getClassKey()))
-                        .set(data, SetOptions.merge());
             }
             @Override
             public void onFailure(@NotNull Call<ResponseSpecie> call, @NotNull Throwable t) {
@@ -149,6 +111,50 @@ public class ResponseRealizeActivity extends AppCompatActivity {
             }
         });
     }
+    public void pust(ResponseSpecie responseSpecie){
+        FirebaseFirestore firebaseFirestore= FirebaseFirestore.getInstance();
+        Map<String,Object> data=new HashMap<>();
+
+        data.put("parentKey",responseSpecie.getParentKey());
+        firebaseFirestore.collection("Botanicals")
+                .document(String.valueOf(responseSpecie.getKey()))
+                .set(data, SetOptions.merge());
+        data.clear();
+
+        data.put("defaul",responseSpecie.getGenus());
+        data.put("parentKey",responseSpecie.getFamilyKey());
+        firebaseFirestore.collection("Genus")
+                .document(String.valueOf(responseSpecie.getGenusKey()))
+                .set(data, SetOptions.merge());
+        data.clear();
+
+        data.put("parentKey",responseSpecie.getOrderKey());
+        data.put("defaul",responseSpecie.getFamily());
+        firebaseFirestore.collection("Familys")
+                .document(String.valueOf(responseSpecie.getFamilyKey()))
+                .set(data, SetOptions.merge());
+        data.clear();
+
+        data.put("defaul",responseSpecie.getOrder());
+        data.put("parentKey",responseSpecie.getPhylumKey());
+        firebaseFirestore.collection("Orders")
+                .document(String.valueOf(responseSpecie.getOrderKey()))
+                .set(data, SetOptions.merge());
+
+
+        data.put("defaul",responseSpecie.getPhylum());
+        data.put("parentKey",responseSpecie.getClassKey());
+        firebaseFirestore.collection("Phylums")
+                .document(String.valueOf(responseSpecie.getParentKey()))
+                .set(data, SetOptions.merge());
+        data.clear();
+
+        data.put("defaul",responseSpecie.getClass_());
+        firebaseFirestore.collection("Classes")
+                .document(String.valueOf(responseSpecie.getClassKey()))
+                .set(data, SetOptions.merge());
+    }
+
     private class ReceiverThread extends Thread {
         @Override
         public void run() {

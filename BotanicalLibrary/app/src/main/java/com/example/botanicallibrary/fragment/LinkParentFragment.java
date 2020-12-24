@@ -11,10 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.botanicallibrary.BitanicalDetailActivity;
+import com.example.botanicallibrary.ChangeDetailActivity;
 import com.example.botanicallibrary.Interface.RetrofitAPI;
 import com.example.botanicallibrary.R;
 import com.example.botanicallibrary.en.response.ResponseSpecie;
@@ -23,7 +26,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -63,11 +69,36 @@ public class LinkParentFragment extends Fragment implements View.OnClickListener
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_link_parent, container, false);
         LinearLayout listPrent=view.findViewById(R.id.ll_listParent);
-        System.out.println(key);
-
+        LinearLayout detail=view.findViewById(R.id.ll_detail);
         setParent(listPrent,key);
+        setDetail(detail,key);
 
         return view;
+    }
+    private void setDetail(LinearLayout linearLayout,String key){
+        FirebaseFirestore ff=FirebaseFirestore.getInstance();
+        ff.collection("Botanicals")
+                .document(key)
+                .collection("Descriptions")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for(QueryDocumentSnapshot documentSnapshot:task.getResult()) {
+                            System.out.println(documentSnapshot.getData());
+                            LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+                            ViewGroup v = (ViewGroup) layoutInflater.inflate(R.layout.card_description_layout, null);
+                            EditText editName = v.findViewById(R.id.name);
+                            EditText editContent = v.findViewById(R.id.content);
+                            ImageView imageView = v.findViewById(R.id.img);
+
+                            editName.setText((String) documentSnapshot.get("name"));
+                            editContent.setText((String) documentSnapshot.get("content"));
+                            Picasso.with(getContext()).load((String) documentSnapshot.get("img")).fit().into(imageView);
+                            linearLayout.addView(v);
+                        }
+                    }
+                });
     }
     private void setParent(@NonNull LinearLayout linearLayout,@NonNull String key){
         FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();

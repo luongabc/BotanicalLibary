@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.example.botanicallibrary.R;
 import com.example.botanicallibrary.fragment.BotanicalDescriptionFragment;
 import com.example.botanicallibrary.fragment.LibraryFragment;
+import com.example.botanicallibrary.fragment.NewsFragment;
 import com.example.botanicallibrary.fragment.RealizePlantFragment;
 
 public class ScreenMain extends AppCompatActivity {
@@ -29,7 +30,7 @@ public class ScreenMain extends AppCompatActivity {
         ImageView library =findViewById(R.id.libraryPlant);
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
-                .add(R.id.fragment, LibraryFragment.class,null)
+                .add(R.id.fragment, NewsFragment.class,null)
                 .commit();
 
         imageViewRealize.setOnClickListener(new View.OnClickListener() {

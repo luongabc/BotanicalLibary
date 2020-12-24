@@ -2,6 +2,8 @@ package com.example.botanicallibrary.en.response;
 
 
 import java.util.List;
+
+import com.example.botanicallibrary.Interface.IResponseSpecie;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

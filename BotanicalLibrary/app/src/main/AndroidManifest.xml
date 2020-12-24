@@ -17,7 +17,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BotanicalLibrary">
-
+        <activity android:name=".NewsActivity"></activity>
+        <activity android:name=".SignUpActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".ChangeDetailActivity" />
         <!--
                Set to true if your app is Standalone, that is, it does not require the handheld
                app to run.
@@ -44,6 +47,7 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
