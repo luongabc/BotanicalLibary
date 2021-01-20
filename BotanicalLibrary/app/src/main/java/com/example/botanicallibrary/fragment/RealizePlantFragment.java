@@ -90,7 +90,7 @@ public class RealizePlantFragment extends Fragment {
 
         btnRealize.setOnClickListener(v -> {
             if(plantPosts.size()!=0 && checkNullListPost()){
-                loadingDialog.startDialog();
+                loadingDialog.startDialog("Loading...");
                 RealizePlant(plantPosts);
             }
             else {
@@ -99,9 +99,6 @@ public class RealizePlantFragment extends Fragment {
             }
         });
         btnAddImage.setOnClickListener(v -> {
-            Permission.checkPermissionCamera(getActivity());
-            Permission.checkPermissionReadStorage(getActivity());
-            Permission.checkPermissionWriteStorage(getActivity());
             if(plantPosts.size()<5) {
                 Intent intent1 = new Intent(getContext(), SelectImage.class);
                 startActivityForResult(intent1, REQUEST_CODE_GET_IMAGE);

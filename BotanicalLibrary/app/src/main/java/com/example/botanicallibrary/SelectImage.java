@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
 import androidx.core.content.FileProvider;
 
 import com.example.botanicallibrary.bl.FileUtils;
@@ -22,9 +24,9 @@ import java.io.IOException;
 import java.util.Date;
 
 public class SelectImage extends Activity {
-    private final int REQUEST_CODE_CAMERA=51   ,REQUEST_CODE_GALLERY=19;
-
-    private String currentPhotoPath;
+    private final int REQUEST_CODE_CAMERA=51   ,REQUEST_CODE_GALLERY=19, IMGWIDTH=400, IMGHEIGTH=600;
+    private String TYPEIMAGE="image/*",PATHIMAGE="pathImage";
+    private String currentPhotoPath, imageFileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +34,17 @@ public class SelectImage extends Activity {
         setContentView(R.layout.activity_select_image);
         ImageButton btnCamera = findViewById(R.id.camera);
         ImageButton btnGallery = findViewById(R.id.gallery);
-
-        btnCamera.setOnClickListener(v -> dispatchTakePictureIntent());
+        btnCamera.setOnClickListener(v ->{
+            if(!Permission.requestPermissionCamera(this)||
+                    !Permission.checkPermissionReadStorage(this)||
+                    !Permission.checkPermissionWriteStorage(this)) return;
+            dispatchTakePictureIntent();
+        });
         btnGallery.setOnClickListener(v -> {
-            Intent intent=new Intent(Intent.ACTION_GET_CONTENT).setType("image/*");
+            if(!Permission.requestPermissionCamera(this)||
+                !Permission.checkPermissionReadStorage(this)||
+                !Permission.checkPermissionWriteStorage(this)) return;
+            Intent intent=new Intent(Intent.ACTION_GET_CONTENT).setType(TYPEIMAGE);
             startActivityForResult(Intent.createChooser(intent,"Select picture"),REQUEST_CODE_GALLERY);
         });
     }
@@ -44,17 +53,12 @@ public class SelectImage extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==REQUEST_CODE_CAMERA && resultCode==Activity.RESULT_OK){
-            int imageWidth = 720;
-            int imageHeigth = 1028;
-            setPic(imageWidth, imageHeigth);
             galleryAddPic();
+            setPic(IMGWIDTH, IMGHEIGTH);
         }
         else if(requestCode==REQUEST_CODE_GALLERY && resultCode==Activity.RESULT_OK){
             currentPhotoPath=(new FileUtils(getBaseContext())).getPath(data.getData());
-            int imageWidth = 720;
-            int imageHeigth = 1028;
-            setPic(imageWidth, imageHeigth);
-
+            setPic(IMGWIDTH, IMGHEIGTH);
         }
         finish();
     }
@@ -62,21 +66,18 @@ public class SelectImage extends Activity {
     @Override
     public void finish() {
         Intent intent=new Intent();
-        intent.putExtra("pathImage",currentPhotoPath);
+        intent.putExtra(PATHIMAGE,currentPhotoPath);
         setResult(RESULT_OK,intent);
         super.finish();
     }
     private void dispatchTakePictureIntent() {
-        Permission.checkPermissionCamera(this);
-        Permission.checkPermissionReadStorage(this);
-        Permission.checkPermissionWriteStorage(this);
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
             File photoFile = null;
             try {
-                photoFile =new File(createImageFile());
+                photoFile =new File(createImageFile(null));
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -97,34 +98,35 @@ public class SelectImage extends Activity {
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
     }
-    private String createImageFile() throws IOException {
-        // Create an image file name
-        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    private String createNameFile(String name){
+        if(name==null){
+            @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            return "JPEG_" + timeStamp + "_";
+        }
+        return "SEND_"+name;
+    }
+    private String createImageFile(String name) throws IOException {
+        imageFileName =this.createNameFile(name);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
-                storageDir      /* directory */
+                getExternalFilesDir(Environment.DIRECTORY_PICTURES)      /* directory */
         );
         // Save a file: path for use with ACTION_VIEW intents
         currentPhotoPath = image.getAbsolutePath();
         return currentPhotoPath;
     }
+
     private void setPic(int width, int heigth) {
         Bitmap filebBitmap=BitmapFactory.decodeFile(currentPhotoPath);
-
-        if(filebBitmap==null){
-            System.out.println("nulllllllllllllllll"+currentPhotoPath);
-            return;
-        }
+        if(filebBitmap==null) return;
         Bitmap bitmap = Bitmap.createScaledBitmap(filebBitmap,width,heigth,true);
         try{
-            File smallImage=new     File(createImageFile());
+            File smallImage=new     File(createImageFile(imageFileName));
             FileOutputStream fileOutputStream = new FileOutputStream(smallImage);
             bitmap.compress(Bitmap.CompressFormat.JPEG,100,fileOutputStream);
         }catch (Exception ignored){
-
+            Toast.makeText(this,ignored.getMessage(),Toast.LENGTH_LONG);
         }
     }
 }

@@ -68,12 +68,12 @@ public class NewsFragment extends Fragment {
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(RetrofitAPI.RSSURL)
                 .addConverterFactory(SimpleXmlConverterFactory.create());
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor()
+        /*HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor()
                 .setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(loggingInterceptor);
-        builder.client(httpClient.build());
+        builder.client(httpClient.build());*/
 
         Retrofit retrofit = builder.build();
 

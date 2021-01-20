@@ -13,7 +13,7 @@ public class LoadingDialog{
     public LoadingDialog(Activity activity){
         this.activity=activity;
     }
-    public void startDialog(){
+    public void startDialog(String text){
         AlertDialog.Builder builder=new AlertDialog.Builder(activity);
         LayoutInflater layoutInflater=activity.getLayoutInflater();
         builder.setView(layoutInflater.inflate(R.layout.layout_loading,null));

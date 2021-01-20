@@ -2,6 +2,8 @@ package com.example.botanicallibrary.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import com.example.botanicallibrary.BitanicalDetailActivity;
 import com.example.botanicallibrary.Interface.ILoadMore;
 import com.example.botanicallibrary.Interface.ItemClickListener;
 import com.example.botanicallibrary.R;
+import com.example.botanicallibrary.en.Local;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.squareup.picasso.Picasso;
 
@@ -31,7 +34,6 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
         this.itemViewModels = itemViewModels;
         this.recyclerView=recyclerView;
     }
-
 
     @NonNull
     @Override
@@ -49,9 +51,9 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
             holder.imageView.setImageDrawable(null);
             return;
         }
-        String nameVi=(String)itemViewModels.get(position).get("name");
-        String url=(String)itemViewModels.get(position).get("imgBackground");
-        if(nameVi==null)  nameVi=(String)itemViewModels.get(position).get("default");
+        String nameVi=(String)itemViewModels.get(position).get(Local.NAME);
+        String url=(String)itemViewModels.get(position).get(Local.IMAGEBG);
+        if(nameVi==null)  nameVi=(String)itemViewModels.get(position).get(Local.NAMEDEFAULT);
         holder.textView.setText(nameVi);
         holder.imageView.getLayoutParams().height=recyclerView.getWidth()/2;
         Picasso.with(mContext).load(url).fit().into(holder.imageView);
@@ -108,7 +110,4 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
             return false;
         }
     }
-
-
-
 }

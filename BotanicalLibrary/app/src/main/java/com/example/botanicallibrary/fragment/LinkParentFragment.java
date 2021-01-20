@@ -20,6 +20,7 @@ import com.example.botanicallibrary.BitanicalDetailActivity;
 import com.example.botanicallibrary.ChangeDetailActivity;
 import com.example.botanicallibrary.Interface.RetrofitAPI;
 import com.example.botanicallibrary.R;
+import com.example.botanicallibrary.en.Local;
 import com.example.botanicallibrary.en.response.ResponseSpecie;
 import com.example.botanicallibrary.en.response.demosetdata.ResponseSetData;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -44,7 +45,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LinkParentFragment extends Fragment implements View.OnClickListener{
     private String key;
-    private static final  String KEY="key", BOTANICALS="Botanicals",NAME="name",DEFAULT="default",RANK="rank",PARENTkEY="parentKey";
+    private static final  String KEY="key";
 
     public LinkParentFragment() {
         // Required empty public constructor
@@ -102,7 +103,7 @@ public class LinkParentFragment extends Fragment implements View.OnClickListener
     }
     private void setParent(@NonNull LinearLayout linearLayout,@NonNull String key){
         FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();
-        firebaseFirestore.collection(BOTANICALS)
+        firebaseFirestore.collection(Local.BOTANICALS)
                 .document(key)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -110,24 +111,23 @@ public class LinkParentFragment extends Fragment implements View.OnClickListener
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if(task.isSuccessful()){
-                            String name= (String) task.getResult().get(NAME);
-                            if(name==null) name=(String) task.getResult().get(DEFAULT);
-                            String rank=(String) task.getResult().get(RANK);
+                            String name= (String) task.getResult().get(Local.NAME);
+                            if(name==null || name.equals("")) name=(String) task.getResult().get(Local.NAMEDEFAULT);
+                            String rank=(String) task.getResult().get(Local.RANK);
+
                             TextView textView =new TextView(getContext());
                             textView.setText(rank+" : "+name+"  ->");
                             textView.setTextColor(R.color.light_blue_900);
-                            textView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Intent intent =new Intent(getContext(),BitanicalDetailActivity.class);
-                                    intent.putExtra(KEY,key);
-                                    startActivity(intent);
-                                    getActivity().finish();
-                                }
+                            textView.setTextSize(20);
+                            textView.setOnClickListener(v -> {
+                                Intent intent =new Intent(getContext(),BitanicalDetailActivity.class);
+                                intent.putExtra(KEY,key);
+                                startActivity(intent);
+                                getActivity().finish();
                             });
                             linearLayout.addView(textView);
-                            if(task.getResult().get(PARENTkEY)==null) return;
-                            setParent(linearLayout,task.getResult().get(PARENTkEY).toString());
+                            if(task.getResult().get(Local.PARENTKEY)==null) return;
+                            setParent(linearLayout,task.getResult().get(Local.PARENTKEY).toString());
                         }
                     }
                 });

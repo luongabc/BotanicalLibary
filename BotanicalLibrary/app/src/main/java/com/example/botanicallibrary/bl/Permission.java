@@ -10,49 +10,20 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 public class Permission {
-
-    public static void checkPermissionCamera(Context context){
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    (Activity) context,
-                    Manifest.permission.CAMERA)) {
-                showDialog(context,
-                        Manifest.permission.CAMERA);
-
-            } else {
-                ActivityCompat.requestPermissions((Activity) context,new String[] { Manifest.permission.CAMERA },1);
-            }
-        }
+    public static boolean  requestPermissionCamera(Context context){
+        if(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) return  true;
+        ActivityCompat.requestPermissions((Activity) context,new String[] { Manifest.permission.CAMERA },1);
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
     }
-    public static void checkPermissionWriteStorage(Context context){
-
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    (Activity) context,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                showDialog(context,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-            } else {
-                ActivityCompat.requestPermissions((Activity) context,new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE },1);
-            }
-        }
+    public static boolean checkPermissionWriteStorage(Context context){
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) return true;
+        ActivityCompat.requestPermissions((Activity) context,new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE },1);
+        return ContextCompat.checkSelfPermission(context,Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
-    public static void checkPermissionReadStorage(Context context){
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    (Activity) context,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                showDialog(context,
-                        Manifest.permission.READ_EXTERNAL_STORAGE);
-
-            } else {
-                ActivityCompat.requestPermissions((Activity) context,new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },1);
-            }
-        }
+    public static boolean checkPermissionReadStorage(Context context){
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) return true;
+        ActivityCompat.requestPermissions((Activity) context,new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },1);
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
     private static void showDialog(final Context context,
                                    final String permission) {

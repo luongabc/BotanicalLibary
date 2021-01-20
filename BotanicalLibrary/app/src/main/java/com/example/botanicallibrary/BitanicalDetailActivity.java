@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import com.example.botanicallibrary.fragment.BotanicalDescriptionFragment;
 import com.example.botanicallibrary.fragment.LinkParentFragment;
 import com.example.botanicallibrary.fragment.ListImageFragment;
+import com.example.botanicallibrary.fragment.MapsWebViewFragment;
 import com.example.botanicallibrary.fragment.RealizePlantFragment;
 
 import java.util.Objects;
@@ -40,39 +41,39 @@ public class BitanicalDetailActivity extends AppCompatActivity {
         ImageView listImg=findViewById(R.id.listImg);
         ImageView description=findViewById(R.id.description);
         ImageView linkParent=findViewById(R.id.linkParent);
+        ImageView map=findViewById(R.id.map);
 
-        linkParent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LinkParentFragment linkParentFragment=LinkParentFragment.newInstance(bundle);
-                getSupportFragmentManager().beginTransaction()
-                        .setReorderingAllowed(true)
-                        .replace(R.id.f_listImage,linkParentFragment,null)
-                        .commit();
-            }
+        map.setOnClickListener(v -> {
+            MapsWebViewFragment mapsWebViewFragment=MapsWebViewFragment.newInstance(bundle);
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.f_listImage,mapsWebViewFragment,null)
+                    .commit();
         });
 
-        description.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                BotanicalDescriptionFragment botanicalDescriptionFragment=BotanicalDescriptionFragment.newInstance(key);
-                botanicalDescriptionFragment.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction()
-                        .setReorderingAllowed(true)
-                        .replace(R.id.f_listImage, botanicalDescriptionFragment,null)
-                        .commit();
-            }
+        linkParent.setOnClickListener(v -> {
+            LinkParentFragment linkParentFragment=LinkParentFragment.newInstance(bundle);
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.f_listImage,linkParentFragment,null)
+                    .commit();
         });
-        listImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ListImageFragment listImageFragment=ListImageFragment.newInstance(key);
-                listImageFragment.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction()
-                        .setReorderingAllowed(true)
-                        .add(R.id.f_listImage, listImageFragment,null)
-                        .commit();
-            }
+
+        description.setOnClickListener(v -> {
+            BotanicalDescriptionFragment botanicalDescriptionFragment=BotanicalDescriptionFragment.newInstance(key);
+            botanicalDescriptionFragment.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.f_listImage, botanicalDescriptionFragment,null)
+                    .commit();
+        });
+        listImg.setOnClickListener(v -> {
+            ListImageFragment listImageFragment1 =ListImageFragment.newInstance(key);
+            listImageFragment1.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(R.id.f_listImage, listImageFragment1,null)
+                    .commit();
         });
     }
 

@@ -9,7 +9,7 @@
     tools:deviceIds="wear" >
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/tv_dialog"
         android:layout_width="146dp"
         android:layout_height="65dp"
         android:padding="18dp"

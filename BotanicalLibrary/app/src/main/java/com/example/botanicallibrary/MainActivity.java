@@ -35,9 +35,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Permission.checkPermissionCamera(this);
-        Permission.checkPermissionReadStorage(this);
-        Permission.checkPermissionWriteStorage(this);
         ConstraintLayout constraintLayout=findViewById(R.id.lOBg);
         constraintLayout.setOnClickListener(v -> {
             Intent intent =new Intent(getBaseContext(), ScreenMain.class);

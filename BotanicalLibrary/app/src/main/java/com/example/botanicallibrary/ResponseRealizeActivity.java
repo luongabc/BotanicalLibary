@@ -8,7 +8,9 @@ import android.widget.ListView;
 
 import com.example.botanicallibrary.Interface.IResponseSpecie;
 import com.example.botanicallibrary.Interface.RetrofitAPI;
+import com.example.botanicallibrary.bl.Data;
 import com.example.botanicallibrary.en.DataListViewResponseRealize;
+import com.example.botanicallibrary.en.Local;
 import com.example.botanicallibrary.en.response.ResponseGbifMedia;
 import com.example.botanicallibrary.en.response.ResponseSpecie;
 import com.example.botanicallibrary.fragment.ArrayAdapterResponseRealize;
@@ -56,7 +58,7 @@ public class ResponseRealizeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_response_realize);
         Intent intent=getIntent();
-        List<DataListViewResponseRealize> responseDataPost = (List<DataListViewResponseRealize>) Objects.requireNonNull(intent.getExtras()).getSerializable("responseRealize");
+        List<DataListViewResponseRealize> responseDataPost = (List<DataListViewResponseRealize>) (intent.getExtras()).getSerializable("responseRealize");
         ListView lVResultRealize=findViewById(R.id.lVResultRealize);
 
         assert responseDataPost != null;
@@ -65,7 +67,7 @@ public class ResponseRealizeActivity extends AppCompatActivity {
         ReceiverThread receiverThread=new ReceiverThread();
         receiverThread.run();
         for(int i = 0; i< responseDataPost.size(); i++){
-            GetUrlImage( responseDataPost.get(i));
+            getUrlImage( responseDataPost.get(i));
         }
         lVResultRealize.setOnItemClickListener((parent, view, position, id) -> {
             String key=((DataListViewResponseRealize)parent.getItemAtPosition(position)).getGbif();
@@ -73,37 +75,38 @@ public class ResponseRealizeActivity extends AppCompatActivity {
             intent1.putExtra("key",key);
             startActivity(intent1);
         });
-
-
     }
-    protected void GetUrlImage(DataListViewResponseRealize dataListViewResponseRealize){
+    protected void getUrlImage(DataListViewResponseRealize dataListViewResponseRealize){
         RetrofitAPI getGbif =new Retrofit.Builder()
                 .baseUrl(RetrofitAPI.GBIF)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(RetrofitAPI.class);
+
+        //get url image of botanical from gbif
         Call<ResponseGbifMedia> callMedia=getGbif.getMedia(dataListViewResponseRealize.getGbif(),1,0);
         callMedia.enqueue(new Callback<ResponseGbifMedia>() {
             @Override
             public void onResponse(@NotNull Call<ResponseGbifMedia> call, @NotNull Response<ResponseGbifMedia> response) {
                 if (!response.isSuccessful() || response.body().getResults().size()==0 ) return;
                 assert response.body() != null;
-                dataListViewResponseRealize.setUrl(response.body().getResults().get(0).getIdentifier());
-                System.out.println(response.body().getResults().get(0).getTaxonKey());
+                String url=response.body().getResults().get(0).getIdentifier();
+                dataListViewResponseRealize.setUrl(url);
+                Data.setUrlImageBg(dataListViewResponseRealize.getGbif(),url);
             }
             @Override
             public void onFailure(@NotNull Call<ResponseGbifMedia> call, @NotNull Throwable t) {
 
             }
         });
+
+        //get gbif info
         Call<ResponseSpecie> call=getGbif.getGbif(dataListViewResponseRealize.getGbif());
         call.enqueue(new Callback<ResponseSpecie>() {
             @Override
             public void onResponse(@NotNull Call<ResponseSpecie> call, @NotNull Response<ResponseSpecie> response) {
                 if (!response.isSuccessful() || response.body()==null ) return;
-                assert response.body() != null;
-                pust(response.body());
-
+                Data.data(response.body());
             }
             @Override
             public void onFailure(@NotNull Call<ResponseSpecie> call, @NotNull Throwable t) {
@@ -111,49 +114,7 @@ public class ResponseRealizeActivity extends AppCompatActivity {
             }
         });
     }
-    public void pust(ResponseSpecie responseSpecie){
-        FirebaseFirestore firebaseFirestore= FirebaseFirestore.getInstance();
-        Map<String,Object> data=new HashMap<>();
 
-        data.put("parentKey",responseSpecie.getParentKey());
-        firebaseFirestore.collection("Botanicals")
-                .document(String.valueOf(responseSpecie.getKey()))
-                .set(data, SetOptions.merge());
-        data.clear();
-
-        data.put("defaul",responseSpecie.getGenus());
-        data.put("parentKey",responseSpecie.getFamilyKey());
-        firebaseFirestore.collection("Genus")
-                .document(String.valueOf(responseSpecie.getGenusKey()))
-                .set(data, SetOptions.merge());
-        data.clear();
-
-        data.put("parentKey",responseSpecie.getOrderKey());
-        data.put("defaul",responseSpecie.getFamily());
-        firebaseFirestore.collection("Familys")
-                .document(String.valueOf(responseSpecie.getFamilyKey()))
-                .set(data, SetOptions.merge());
-        data.clear();
-
-        data.put("defaul",responseSpecie.getOrder());
-        data.put("parentKey",responseSpecie.getPhylumKey());
-        firebaseFirestore.collection("Orders")
-                .document(String.valueOf(responseSpecie.getOrderKey()))
-                .set(data, SetOptions.merge());
-
-
-        data.put("defaul",responseSpecie.getPhylum());
-        data.put("parentKey",responseSpecie.getClassKey());
-        firebaseFirestore.collection("Phylums")
-                .document(String.valueOf(responseSpecie.getParentKey()))
-                .set(data, SetOptions.merge());
-        data.clear();
-
-        data.put("defaul",responseSpecie.getClass_());
-        firebaseFirestore.collection("Classes")
-                .document(String.valueOf(responseSpecie.getClassKey()))
-                .set(data, SetOptions.merge());
-    }
 
     private class ReceiverThread extends Thread {
         @Override
