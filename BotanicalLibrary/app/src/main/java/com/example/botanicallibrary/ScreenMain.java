@@ -2,24 +2,19 @@ package com.example.botanicallibrary;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.view.View;
-import android.widget.ImageView;
-
-import com.example.botanicallibrary.R;
-import com.example.botanicallibrary.fragment.BotanicalDescriptionFragment;
-import com.example.botanicallibrary.fragment.LibraryFragment;
-import com.example.botanicallibrary.fragment.MapsWebViewFragment;
-import com.example.botanicallibrary.fragment.NewsFragment;
-import com.example.botanicallibrary.fragment.PrifileUserFragment;
-import com.example.botanicallibrary.fragment.RealizePlantFragment;
+import com.example.botanicallibrary.fragment.main.LibraryFragment;
+import com.example.botanicallibrary.fragment.main.ListQuestionFragment;
+import com.example.botanicallibrary.fragment.main.NewsFragment;
+import com.example.botanicallibrary.fragment.main.PrifileUserFragment;
+import com.example.botanicallibrary.fragment.main.RealizePlantFragment;
 
 public class ScreenMain extends AppCompatActivity {
-
-
+    private String selected="";
     public ScreenMain(){
         super(R.layout.activity_screen_main);
     }
@@ -31,30 +26,63 @@ public class ScreenMain extends AppCompatActivity {
         ImageView library =findViewById(R.id.libraryPlant);
         ImageView news=findViewById(R.id.iv_news);
         ImageView userProfile=findViewById(R.id.profile);
+        ImageView question =findViewById(R.id.iv_question);
 
+        selected="NEWS";
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
                 .add(R.id.fragment, NewsFragment.class,null)
                 .commit();
 
-        news.setOnClickListener(v -> getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(true)
-                .replace(R.id.fragment, NewsFragment.class,null)
-                .commit());
+        news.setOnClickListener(v -> {
+            if(selected.equals("NEWS")) return;
+            selected="NEWS";
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.fragment, NewsFragment.class,null)
+                    .commit();
+        });
 
-        userProfile.setOnClickListener(v -> getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(true)
-                .replace(R.id.fragment, PrifileUserFragment.class,null)
-                .commit());
+        userProfile.setOnClickListener(v -> {
+            if(selected.equals("PRIFILE")) return;
+            selected="PRIFILE";
+            PrifileUserFragment prifileUserFragment=new PrifileUserFragment();
+            prifileUserFragment.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.fragment, prifileUserFragment, null)
+                    .commit();
+        });
 
-        imageViewRealize.setOnClickListener(v -> getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(true)
-                .replace(R.id.fragment, RealizePlantFragment.class,null)
-                .commit());
-        library.setOnClickListener(v -> getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(true)
-                .replace(R.id.fragment, LibraryFragment.class,null)
-                .commit());
+        imageViewRealize.setOnClickListener(v -> {
+            if(selected.equals("REALIZE")) return;
+            selected="REALIZE";
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.fragment, RealizePlantFragment.class,null)
+                    .commit();
+        });
+
+        library.setOnClickListener(v -> {
+            if(selected.equals("LIBRARY")) return;
+            selected="LIBRARY";
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.fragment, LibraryFragment.class,null)
+                    .commit();
+        });
+
+        question.setOnClickListener(v-> {
+            if(selected.equals("QUESTION")) return;
+            selected="QUESTION";
+            ListQuestionFragment listQuestionFragment=new ListQuestionFragment();
+            listQuestionFragment.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.fragment, listQuestionFragment,null)
+                    .commit();
+        });
+
 
     }
 

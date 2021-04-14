@@ -3,11 +3,10 @@ package com.example.botanicallibrary.en;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
-import java.io.File;
-
 public class PlantPost {
     public String organ;
-
+    public Uri uri;
+    public Bitmap bitmapImg;
     public String getOrgan() {
         return organ;
     }
@@ -31,10 +30,6 @@ public class PlantPost {
     public void setBitmapImg(Bitmap bitmapImg) {
         this.bitmapImg = bitmapImg;
     }
-
-    public Uri uri;
-    public Bitmap bitmapImg;
-
     public PlantPost(String organ, Uri uri, Bitmap bitmapImg) {
         this.organ = organ;
         this.uri = uri;

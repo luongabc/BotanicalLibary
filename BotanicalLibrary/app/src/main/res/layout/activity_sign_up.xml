@@ -27,7 +27,7 @@
         android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Password"
+        android:text="Mật khẩu"
         app:layout_constraintBottom_toTopOf="@+id/et_password"
         app:layout_constraintStart_toStartOf="@+id/et_password" />
 
@@ -35,7 +35,7 @@
         android:id="@+id/textView13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="RePassword"
+        android:text="Nhập lại mật khẩu"
         app:layout_constraintBottom_toTopOf="@+id/et_repassword"
         app:layout_constraintStart_toStartOf="@+id/et_repassword" />
 
@@ -63,7 +63,7 @@
         android:id="@+id/btn_signUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign up"
+        android:text="Đăng kí"
         app:layout_constraintEnd_toEndOf="@+id/et_repassword"
         app:layout_constraintTop_toBottomOf="@+id/et_repassword" />
 
@@ -71,7 +71,8 @@
         android:id="@+id/textView14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:layout_marginTop="10dp"
+        android:text="Đã có tài khoản"
         app:layout_constraintStart_toStartOf="@+id/et_repassword"
         app:layout_constraintTop_toBottomOf="@+id/btn_signUp" />
 
@@ -79,17 +80,22 @@
         android:id="@+id/tv_signIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign in"
+        android:text="Đăng nhập"
+        android:textColor="@color/light_blue_400"
+        app:layout_constraintBottom_toBottomOf="@+id/textView14"
         app:layout_constraintEnd_toEndOf="@+id/btn_signUp"
-        app:layout_constraintTop_toBottomOf="@+id/btn_signUp" />
+        app:layout_constraintTop_toTopOf="@+id/textView14" />
 
     <TextView
         android:id="@+id/textView16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign up"
+        android:text="Đăng kí"
+        android:textColor="#2196F3"
         android:textSize="30sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/textView11"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

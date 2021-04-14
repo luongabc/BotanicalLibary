@@ -8,12 +8,10 @@
 
     <LinearLayout
         android:id="@+id/TopBar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#3F51B5"
+        android:background="@color/gray_600"
         android:orientation="horizontal"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -23,24 +21,19 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@color/white"
             android:contentDescription="@string/img"
-            app:srcCompat="@drawable/icon_tree_64" />
-
-        <ImageView
-            android:id="@+id/description"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/img"
-            app:srcCompat="@drawable/icon_wiki" />
+            android:padding="5dp"
+            app:srcCompat="@drawable/icons8_photo_gallery_100" />
 
         <ImageView
             android:id="@+id/linkParent"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_weight="1"
             android:contentDescription="@string/img"
-            app:srcCompat="@android:drawable/ic_dialog_info" />
+            android:padding="10dp"
+            app:srcCompat="@drawable/icon_tree_64" />
 
         <ImageView
             android:id="@+id/map"
@@ -48,7 +41,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:contentDescription="@string/img"
-            app:srcCompat="@android:drawable/ic_dialog_map" />
+            android:padding="5dp"
+            app:srcCompat="@drawable/icon_geography_100" />
 
     </LinearLayout>
 

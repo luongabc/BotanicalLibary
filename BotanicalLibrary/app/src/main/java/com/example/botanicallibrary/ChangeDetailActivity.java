@@ -1,132 +1,175 @@
 package com.example.botanicallibrary;
 
 import android.annotation.SuppressLint;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.Activity;
-import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
-import com.example.botanicallibrary.Interface.IDataFireBase;
-import com.example.botanicallibrary.bl.Data;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.botanicallibrary.bl.LoadingDialog;
+import com.example.botanicallibrary.en.Local;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.zip.Inflater;
+
+import es.dmoral.toasty.Toasty;
 
 public class ChangeDetailActivity extends AppCompatActivity {
-    private String key="1000002";
+    private String key, keyUser, currentPhotoPath;
     protected Activity activity=this;
-    private RecyclerView recyclerView;
     private List<DataAdapter> dataAdapters;
     private LinearLayout linearLayout;
+    private Bitmap bitmap;
+    private ImageView iv_offsetImageSelect;
+    private int offsetSelect=0,numSend=0,numLoad=0;
+    private Intent intent1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //key= (String) getIntent().getExtras().get("key");
+
+        StorageReference mStorageRef = FirebaseStorage.getInstance().getReference();
+
+        key= (String) getIntent().getExtras().get(Local.BundleLocal.KEY);
         setContentView(R.layout.activity_change_detail);
-        setTitle(getResources().getString(R.string.title_activity_change_bitanical));
         linearLayout=findViewById(R.id.ll_layout);
 
+        SharedPreferences sp1=getSharedPreferences(Local.DeviceLocal.NAMEDATADEVICE, MODE_PRIVATE);
+        keyUser=sp1.getString(Local.DeviceLocal.ID,null);
+
+        intent1 = new Intent(getBaseContext(), SelectImage.class);
+        Bundle bundle=new Bundle();
+        bundle.putInt(Local.BundleLocal.WIDTH,0);
+        bundle.putInt(Local.BundleLocal.QUALITY,100);
+        intent1.putExtras(bundle);
+
         dataAdapters=new ArrayList<>();
-        ImageView btnAdd=findViewById(R.id.btn_add);
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dataAdapters.add(new DataAdapter("","",""));
-                addContentLayout(new DataAdapter("","",""));
+        ImageView btnAdd=findViewById(R.id.iv_newDescription);
+        btnAdd.setOnClickListener(v -> {
+            for(int i=0;i<dataAdapters.size();i++){
+                if(dataAdapters.get(i).name==null || dataAdapters.get(i).name.equals("")) return;
             }
+            dataAdapters.add(new DataAdapter("","",""));
+            addContentLayout(dataAdapters.get(dataAdapters.size()-1));
         });
-        ImageView  btn_send=findViewById(R.id.btn_send);
-        btn_send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LoadingDialog loadingDialog=new LoadingDialog(activity);
-                FirebaseFirestore ff=FirebaseFirestore.getInstance();
-                deleteDocuments(key);
-                for(int i=0; i<dataAdapters.size(); i++){
-                    if(dataAdapters.get(i).name.equals("")|| dataAdapters.get(i).content.equals("")){
-                        dataAdapters.remove(i);
-                        i--;
-                        continue;
+        ImageView  btn_send=findViewById(R.id.iv_push);
+
+        btn_send.setOnClickListener(v -> {
+            LoadingDialog loadingDialog=new LoadingDialog(this);
+            loadingDialog.startDialog("Đang gửi");
+            numSend=dataAdapters.size()+1;
+            for(int i=0;i<dataAdapters.size();i++){
+                if(dataAdapters.get(i).urlImg!=null){
+                    if(dataAdapters.get(i).urlImg.equals("")) dataAdapters.get(i).urlImg=null;
+                    File fileImage=new File(dataAdapters.get(i).urlImg);
+                    if(fileImage.exists() && !fileImage.isDirectory()){
+                        Uri uri = Uri.fromFile(new File(dataAdapters.get(i).urlImg));
+                        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat(Local.FOMATDATE).format(new Date());
+                        dataAdapters.get(i).urlImg=Local.firebaseLocal.DIRIMAGE.concat(keyUser).concat(timeStamp).concat(dataAdapters.get(i).name).concat(".image.jpg");
+                        StorageReference riversRef = mStorageRef.child(dataAdapters.get(i).urlImg);
+                        riversRef.putFile(uri)
+                                .addOnSuccessListener(t -> {
+                                })
+                                .addOnFailureListener(e -> {
+                                    loadingDialog.dismissDialog();
+                                    Toasty.error(getBaseContext(), "Đã có lỗi!", Toast.LENGTH_SHORT, true).show();
+                                });
                     }
-                    Map<String, String > stringMap =new HashMap<>();
-                    stringMap.put("name",dataAdapters.get(i).name);
-                    stringMap.put("content",dataAdapters.get(i).content);
-                    stringMap.put("urlImg","null");
-                    ff.collection("Botanicals")
-                            .document(key)
-                            .collection("Descriptions")
-                            .document(String.valueOf(i))
-                            .set(stringMap, SetOptions.merge());
                 }
             }
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            for(int i=0;i<dataAdapters.size();i++) {
+                db.collection(Local.firebaseLocal.CONTRIBUTE)
+                        .document(key)
+                        .collection(keyUser)
+                        .document(String.valueOf(i))
+                        .set(dataAdapters.get(i))
+                        .addOnSuccessListener(documentReference -> {
+                            loadingDialog.dismissDialog();
+                            Toasty.success(getBaseContext(), "Thành công!", Toast.LENGTH_SHORT, true).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            loadingDialog.dismissDialog();
+                            Toasty.error(getBaseContext(), "Đã có lỗi!", Toast.LENGTH_SHORT, true).show();
+                        });
+            }
+
+
         });
+
+
         this.getData(key);
 
     }
-    private void addContentLayout(DataAdapter dataAdapter){
+    private void addContentLayout(DataAdapter adapter){
+        int offset=dataAdapters.size()-1;
         LayoutInflater layoutInflater= LayoutInflater.from(getBaseContext());
-        final ViewGroup viewGroup= (ViewGroup) layoutInflater.inflate(R.layout.card_description_layout,null);
+        @SuppressLint("InflateParams") ViewGroup viewGroup= (ViewGroup) layoutInflater.inflate(R.layout.layout_card_description,null);
+
         EditText editName=viewGroup.findViewById(R.id.name);
         EditText editContent=viewGroup.findViewById(R.id.content);
-        ImageView add=viewGroup.findViewById(R.id.img);
-        ImageView btn_delete=viewGroup.findViewById(R.id.btn_delete);
-        Picasso.with(getBaseContext())
-                .load(R.drawable.icondelete_48)
-                .into(btn_delete);
-        editName.setText(dataAdapter.name);
-        editContent.setText(dataAdapter.content);
+        ImageView iv_add=viewGroup.findViewById(R.id.iv_description);
+        ImageButton btn_delete=viewGroup.findViewById(R.id.btn_action);
+        View view1 =viewGroup.findViewById(R.id.view1);
+        view1.setVisibility(View.GONE);
+        btn_delete.setVisibility(View.VISIBLE);
+        editName.setText(adapter.name);
+        editContent.setText(adapter.content);
         String url;
-        if(dataAdapter.getUrlImg() == null || dataAdapter.urlImg.equals("") )  url=String.valueOf(R.drawable.icon_add_image_96);
-        else url=dataAdapter.urlImg;
-        Picasso.with(getBaseContext()).load(url)
+        if(adapter.getUrlImg() == null || adapter.urlImg.equals("") )  url=String.valueOf(R.drawable.icon_add_image_96);
+        else url=adapter.urlImg;
+        Picasso.with(this).load(url)
                 .placeholder(R.drawable.icon_add_image_96)
                 .centerInside()
                 .fit()
-                .into(add);
-        btn_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int offset=((ViewGroup)(viewGroup.getParent())).indexOfChild(viewGroup);
-                ((ViewGroup)viewGroup.getParent()).removeViewAt(offset);
-                dataAdapters.remove(offset);
-            }
+                .into(iv_add);
+        iv_add.setOnClickListener(v->{
+            iv_offsetImageSelect=(ImageView) v;
+            offsetSelect=offset;
+            startActivityForResult(intent1, Local.REQUEST_CODE_GET_IMAGE);
         });
-
+        btn_delete.setVisibility(View.VISIBLE);
+        btn_delete.setOnClickListener(v -> {
+            ((ViewGroup)viewGroup.getParent()).removeViewAt(offset);
+            dataAdapters.remove(offset);
+            if(offset<numLoad && numLoad>0) numLoad--;
+        });
+        Picasso.with(this).load(R.drawable.icons_delete_64)
+                .centerInside()
+                .fit()
+                .into(btn_delete);
         editContent.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -135,31 +178,22 @@ public class ChangeDetailActivity extends AppCompatActivity {
                     dataAdapters.get(offset).content=""+s;
                 }
             }
-
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
         editName.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(!s.equals("")){
                     int offset=((ViewGroup)(viewGroup.getParent())).indexOfChild(viewGroup);
-                    System.out.println(offset);
                     dataAdapters.get(offset).name= ""+ s;
                 }
             }
-
             @Override
-            public void afterTextChanged(Editable s) {
-
-            }
+            public void afterTextChanged(Editable s) { }
         });
         linearLayout.addView(viewGroup);
     }
@@ -186,24 +220,22 @@ public class ChangeDetailActivity extends AppCompatActivity {
     //private add
     private void getData(String key){
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("Botanicals")
+        firebaseFirestore.collection(Local.firebaseLocal.BOTANICALS)
                 .document(key)
-                .collection("Descriptions")
+                .collection(Local.firebaseLocal.DESCRIPTION)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for(QueryDocumentSnapshot documentSnapshot: Objects.requireNonNull(task.getResult())){
-                            String name=(String)documentSnapshot.get("name");
-                            String content=(String)documentSnapshot.get("content");
-                            String urlImg=(String)documentSnapshot.get("img");
-                            String keyDescription=(String)documentSnapshot.getId();
-                            DataAdapter dataAdapter=new DataAdapter(name,content,urlImg);
-                            dataAdapters.add(dataAdapter);
-                            addContentLayout(dataAdapter);
-                        }
-
+                .addOnCompleteListener((OnCompleteListener<QuerySnapshot>) task -> {
+                    numLoad=task.getResult().size();
+                    for(QueryDocumentSnapshot documentSnapshot: Objects.requireNonNull(task.getResult())){
+                        String name=(String)documentSnapshot.get(Local.firebaseLocal.NAME);
+                        String content=(String)documentSnapshot.get(Local.firebaseLocal.CONTENT);
+                        String urlImg=(String)documentSnapshot.get(Local.firebaseLocal.IMAGE);
+                        //String keyDescription=(String)documentSnapshot.getId();
+                        DataAdapter dataAdapter=new DataAdapter(name,content,urlImg);
+                        dataAdapters.add(dataAdapter);
+                        addContentLayout(dataAdapter);
                     }
+
                 });
     }
     protected class DataAdapter{
@@ -238,5 +270,23 @@ public class ChangeDetailActivity extends AppCompatActivity {
         }
 
         private String name,content,urlImg;
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == Local.REQUEST_CODE_GET_IMAGE && resultCode == Activity.RESULT_OK) {
+            assert data != null;
+            if (Objects.requireNonNull(data.getExtras()).get(Local.BundleLocal.PATHIMAGE)!=null) {
+                currentPhotoPath = (String) data.getExtras().get(Local.BundleLocal.PATHIMAGE);
+                dataAdapters.get(offsetSelect).urlImg=currentPhotoPath;
+                try {
+                    bitmap= BitmapFactory.decodeFile(currentPhotoPath);
+                    iv_offsetImageSelect.setImageBitmap(bitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
     }
 }

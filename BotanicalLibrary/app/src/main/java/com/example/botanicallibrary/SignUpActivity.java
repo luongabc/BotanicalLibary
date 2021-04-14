@@ -1,31 +1,27 @@
 package com.example.botanicallibrary;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.net.Uri;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.botanicallibrary.bl.LoadingDialog;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+import com.example.botanicallibrary.en.Local;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.w3c.dom.Text;
+import es.dmoral.toasty.Toasty;
+
 
 public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private String email,password;
-    private final String TAG="SignUpActivity";
+    private boolean isSign=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +37,7 @@ public class SignUpActivity extends AppCompatActivity {
         tv_goToSignIn.setOnClickListener(v->{
             Intent intent=new Intent(this,LoginActivity.class);
             startActivity(intent);
-            onDestroy();
+            finish();
         });
 
         //event click btn to sign up
@@ -58,73 +54,39 @@ public class SignUpActivity extends AppCompatActivity {
     }
     private void createUserWithEmailAndPassword(String email,String password){
         LoadingDialog dialog=new LoadingDialog(this);
-        dialog.startDialog("Sign up...");
+        dialog.startDialog(getString(R.string.loading));
+        // ...
         firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-                            //updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(SignUpActivity.this, task.getException().getMessage(),
-                                    Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
-                        }
-                        dialog.dismissDialog();
-
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        Toasty.success(getBaseContext(), getString(R.string.Success), Toast.LENGTH_SHORT, true).show();
+                        SharedPreferences sp=getSharedPreferences(Local.DeviceLocal.NAMEDATADEVICE, MODE_PRIVATE);
+                        FirebaseUser user = firebaseAuth.getCurrentUser();
+                        SharedPreferences.Editor Ed=sp.edit();
+                        Ed.putString(Local.DeviceLocal.ID,user.getUid() );
+                        Ed.putString(Local.DeviceLocal.EMAIL,email);
+                        Ed.putString(Local.DeviceLocal.PASSWORD,password);
+                        Ed.apply();
+                        isSign=true;
+                        finish();
+                    } else {
+                        Toasty.error(getBaseContext(), getString(R.string.Error), Toast.LENGTH_SHORT, true).show();
                     }
-                    // ...
+                    dialog.dismissDialog();
+
                 });
     }
-
+    @Override
+    public void finish() {
+        Intent intent=new Intent();
+        Bundle bundle=new Bundle();
+        bundle.putBoolean(Local.BundleLocal.ISSIGNIN,isSign);
+        intent.putExtras(bundle);
+        setResult(RESULT_OK,intent);
+        super.finish();
+    }
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-        //updateUI(currentUser);
-    }
-
-    protected void signInFirebase(String email,String password){
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-                            //updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(SignUpActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
-                        }
-
-                        // ...
-                    }
-                });
-    }
-    protected  void informationUser(){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            // Name, email address, and profile photo Url
-            String name = user.getDisplayName();
-            String email = user.getEmail();
-
-            // Check if user's email is verified
-            boolean emailVerified = user.isEmailVerified();
-
-            // The user's ID, unique to the Firebase project. Do NOT use this value to
-            // authenticate with your backend server, if you have one. Use
-            // FirebaseUser.getIdToken() instead.
-            String uid = user.getUid();
-        }
     }
 }

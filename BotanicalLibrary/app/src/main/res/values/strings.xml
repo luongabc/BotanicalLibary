@@ -3,14 +3,13 @@
     <string name="img">Image</string>
 
     <string name="organ">Organ</string>
-    <string name="flower">Flower</string>
-    <string name="leaf">Leaf</string>
-    <string name="fruit">Fruit</string>
-    <string name="bark">Bark</string>
+    <string name="flower">Hoa</string>
+    <string name="leaf">Lá</string>
+    <string name="fruit">Quả</string>
+    <string name="bark">Thân</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
-    <string name="searchPlant">Search Plant</string>
-    <string name="loading">Loading...</string>
+    <string name="searchPlant">Tìm loài</string>
     <string name="name">Name</string>
     <string name="content">Content</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -39,9 +38,18 @@
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
-
+    <!--modul-->
+    <string name="postQuestion">Bài viết</string>
+    <string name="modulLibrary">Danh sách loài</string>
+    <!--APP -->
+    <string name="search">Tìm kiếm...</string>
+    <string name="empty"></string>
+    <string name="Success">Thành công</string>
+    <string name="Error">Thất bại!</string>
+    <string name="tooLestInfo">Quá ít thông tin</string>
+    <string name="max5">Tối đa 5</string>
+    <string name="loading">Hãy đợi...</string>
+    <string name="dontHavePermissionCamera">Chưa cấp quyền camera!</string>
+    <string name="dontHavePermissionReadStorage">Chưa cấp quyền bộ nhớ!</string>
 </resources>
 

@@ -11,17 +11,21 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.example.botanicallibrary.fragment.BotanicalDescriptionFragment;
-import com.example.botanicallibrary.fragment.LinkParentFragment;
-import com.example.botanicallibrary.fragment.ListImageFragment;
-import com.example.botanicallibrary.fragment.MapsWebViewFragment;
-import com.example.botanicallibrary.fragment.RealizePlantFragment;
+import com.example.botanicallibrary.fragment.infoBotanical.BotanicalDescriptionFragment;
+import com.example.botanicallibrary.fragment.infoBotanical.LinkParentFragment;
+import com.example.botanicallibrary.fragment.infoBotanical.ListImageFragment;
+import com.example.botanicallibrary.fragment.infoBotanical.MapsWebViewFragment;
+import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class BitanicalDetailActivity extends AppCompatActivity {
     private String key;
     private static final String KEY="key";
+    private enum events{LISTIMAGE,LINKPARENT,MAP };
+    ArrayList<ImageView> imageViews=new ArrayList<>();
+    private events event;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,56 +35,62 @@ public class BitanicalDetailActivity extends AppCompatActivity {
 
         Bundle bundle=new Bundle();
         bundle.putString(KEY, key);
-        ListImageFragment listImageFragment=ListImageFragment.newInstance(key);
-        listImageFragment.setArguments(bundle);
+        MapsWebViewFragment mapsWebViewFragment=MapsWebViewFragment.newInstance(bundle);
+
+        LinkParentFragment linkParentFragment=LinkParentFragment.newInstance(bundle);
+
+        BotanicalDescriptionFragment botanicalDescriptionFragment=BotanicalDescriptionFragment.newInstance(key);
+        botanicalDescriptionFragment.setArguments(bundle);
+
+        ListImageFragment listImageFragment1 =ListImageFragment.newInstance(key);
+        listImageFragment1.setArguments(bundle);
+
+        event=events.LISTIMAGE;
+
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
-                .add(R.id.f_listImage, listImageFragment,null)
+                .add(R.id.f_listImage, listImageFragment1,null)
                 .commit();
+        imageViews.add(findViewById(R.id.listImg));
+        imageViews.add(findViewById(R.id.linkParent));
+        imageViews.add(findViewById(R.id.map));
 
-        ImageView listImg=findViewById(R.id.listImg);
-        ImageView description=findViewById(R.id.description);
-        ImageView linkParent=findViewById(R.id.linkParent);
-        ImageView map=findViewById(R.id.map);
-
-        map.setOnClickListener(v -> {
-            MapsWebViewFragment mapsWebViewFragment=MapsWebViewFragment.newInstance(bundle);
+        imageViews.get(0).setOnClickListener(v -> {
+            if(event.equals(events.LISTIMAGE)) return;
+            setEventBackground(event.ordinal(), events.LISTIMAGE.ordinal());
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
-                    .replace(R.id.f_listImage,mapsWebViewFragment,null)
+                    .replace(R.id.f_listImage, listImageFragment1,null)
                     .commit();
+            event=events.LISTIMAGE;
         });
-
-        linkParent.setOnClickListener(v -> {
-            LinkParentFragment linkParentFragment=LinkParentFragment.newInstance(bundle);
+        imageViews.get(1).setOnClickListener(v -> {
+            if(event.equals(events.LINKPARENT)) return;
+            setEventBackground(event.ordinal(), events.LINKPARENT.ordinal());
             getSupportFragmentManager().beginTransaction()
+                    .show(linkParentFragment);getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
-                    .replace(R.id.f_listImage,linkParentFragment,null)
+                    .replace(R.id.f_listImage, linkParentFragment,null)
                     .commit();
+            event=events.LINKPARENT;
         });
-
-        description.setOnClickListener(v -> {
-            BotanicalDescriptionFragment botanicalDescriptionFragment=BotanicalDescriptionFragment.newInstance(key);
-            botanicalDescriptionFragment.setArguments(bundle);
+        imageViews.get(2).setOnClickListener(v -> {
+            if(event.equals(events.MAP)) return;
+            setEventBackground(event.ordinal(), events.MAP.ordinal());
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
-                    .replace(R.id.f_listImage, botanicalDescriptionFragment,null)
+                    .replace(R.id.f_listImage, mapsWebViewFragment,null)
                     .commit();
-        });
-        listImg.setOnClickListener(v -> {
-            ListImageFragment listImageFragment1 =ListImageFragment.newInstance(key);
-            listImageFragment1.setArguments(bundle);
-            getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .add(R.id.f_listImage, listImageFragment1,null)
-                    .commit();
+            event=events.MAP;
         });
     }
-
+    private void setEventBackground(int oldEvent,int newEvent){
+        imageViews.get(newEvent).setBackgroundResource(R.color.white);
+        imageViews.get(oldEvent).setBackgroundResource(0);
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
         return  super.onCreateView(name, context, attrs);
-
     }
 }
