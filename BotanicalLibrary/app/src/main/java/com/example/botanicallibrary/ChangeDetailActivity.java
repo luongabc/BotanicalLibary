@@ -19,17 +19,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.botanicallibrary.bl.LoadingDialog;
 import com.example.botanicallibrary.en.Local;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -44,13 +40,14 @@ import java.util.Objects;
 import es.dmoral.toasty.Toasty;
 
 public class ChangeDetailActivity extends AppCompatActivity {
-    private String key, keyUser, currentPhotoPath;
+    private String key;
+    private String keyUser;
     protected Activity activity=this;
     private List<DataAdapter> dataAdapters;
     private LinearLayout linearLayout;
-    private Bitmap bitmap;
     private ImageView iv_offsetImageSelect;
-    private int offsetSelect=0,numSend=0,numLoad=0;
+    private int offsetSelect=0;
+    private int numLoad=0;
     private Intent intent1;
 
     @Override
@@ -78,32 +75,30 @@ public class ChangeDetailActivity extends AppCompatActivity {
             for(int i=0;i<dataAdapters.size();i++){
                 if(dataAdapters.get(i).name==null || dataAdapters.get(i).name.equals("")) return;
             }
-            dataAdapters.add(new DataAdapter("","",""));
+            dataAdapters.add(new DataAdapter("", "", ""));
             addContentLayout(dataAdapters.get(dataAdapters.size()-1));
         });
         ImageView  btn_send=findViewById(R.id.iv_push);
 
         btn_send.setOnClickListener(v -> {
             LoadingDialog loadingDialog=new LoadingDialog(this);
-            loadingDialog.startDialog("Đang gửi");
-            numSend=dataAdapters.size()+1;
+            loadingDialog.startDialog(getString(R.string.loading));
             for(int i=0;i<dataAdapters.size();i++){
-                if(dataAdapters.get(i).urlImg!=null){
-                    if(dataAdapters.get(i).urlImg.equals("")) dataAdapters.get(i).urlImg=null;
-                    File fileImage=new File(dataAdapters.get(i).urlImg);
-                    if(fileImage.exists() && !fileImage.isDirectory()){
-                        Uri uri = Uri.fromFile(new File(dataAdapters.get(i).urlImg));
-                        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat(Local.FOMATDATE).format(new Date());
-                        dataAdapters.get(i).urlImg=Local.firebaseLocal.DIRIMAGE.concat(keyUser).concat(timeStamp).concat(dataAdapters.get(i).name).concat(".image.jpg");
-                        StorageReference riversRef = mStorageRef.child(dataAdapters.get(i).urlImg);
-                        riversRef.putFile(uri)
-                                .addOnSuccessListener(t -> {
-                                })
-                                .addOnFailureListener(e -> {
-                                    loadingDialog.dismissDialog();
-                                    Toasty.error(getBaseContext(), "Đã có lỗi!", Toast.LENGTH_SHORT, true).show();
-                                });
-                    }
+                if(dataAdapters.get(i).urlImg==null
+                    ||dataAdapters.get(i).urlImg.equals("")) break;
+                File fileImage=new File(dataAdapters.get(i).urlImg);
+                if(fileImage.exists() && !fileImage.isDirectory()){
+                    Uri uri = Uri.fromFile(new File(dataAdapters.get(i).urlImg));
+                    @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat(Local.FOMATDATE).format(new Date());
+                    dataAdapters.get(i).urlImg=Local.firebaseLocal.DIRIMAGE.concat(keyUser).concat(timeStamp).concat(dataAdapters.get(i).name).concat(".image.jpg");
+                    StorageReference riversRef = mStorageRef.child(dataAdapters.get(i).urlImg);
+                    riversRef.putFile(uri)
+                            .addOnSuccessListener(t -> {
+                            })
+                            .addOnFailureListener(e -> {
+                                loadingDialog.dismissDialog();
+                                Toasty.error(getBaseContext(), getString(R.string.Error), Toast.LENGTH_SHORT, true).show();
+                            });
                 }
             }
             FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -115,20 +110,16 @@ public class ChangeDetailActivity extends AppCompatActivity {
                         .set(dataAdapters.get(i))
                         .addOnSuccessListener(documentReference -> {
                             loadingDialog.dismissDialog();
-                            Toasty.success(getBaseContext(), "Thành công!", Toast.LENGTH_SHORT, true).show();
+                            Toasty.success(getBaseContext(), getString(R.string.Success), Toast.LENGTH_SHORT, true).show();
+                            finish();
                         })
                         .addOnFailureListener(e -> {
                             loadingDialog.dismissDialog();
-                            Toasty.error(getBaseContext(), "Đã có lỗi!", Toast.LENGTH_SHORT, true).show();
+                            Toasty.error(getBaseContext(), getString(R.string.Error), Toast.LENGTH_SHORT, true).show();
                         });
             }
-
-
         });
-
-
         this.getData(key);
-
     }
     private void addContentLayout(DataAdapter adapter){
         int offset=dataAdapters.size()-1;
@@ -199,21 +190,17 @@ public class ChangeDetailActivity extends AppCompatActivity {
     }
     private void deleteDocuments(String key){
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("Botanicals")
+        firebaseFirestore.collection(Local.firebaseLocal.BOTANICALS)
                 .document(key)
-                .collection("Descriptions")
+                .collection(Local.firebaseLocal.DESCRIPTION)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for(QueryDocumentSnapshot documentSnapshot: Objects.requireNonNull(task.getResult())){
-                            firebaseFirestore.collection("Botanicals")
-                                    .document(key)
-                                    .collection("Descriptions")
-                                    .document(documentSnapshot.getId())
-                                    .delete();
-                        }
-
+                .addOnCompleteListener(task -> {
+                    for(QueryDocumentSnapshot documentSnapshot: Objects.requireNonNull(task.getResult())){
+                        firebaseFirestore.collection(Local.firebaseLocal.BOTANICALS)
+                                .document(key)
+                                .collection(Local.firebaseLocal.DESCRIPTION)
+                                .document(documentSnapshot.getId())
+                                .delete();
                     }
                 });
     }
@@ -224,21 +211,20 @@ public class ChangeDetailActivity extends AppCompatActivity {
                 .document(key)
                 .collection(Local.firebaseLocal.DESCRIPTION)
                 .get()
-                .addOnCompleteListener((OnCompleteListener<QuerySnapshot>) task -> {
-                    numLoad=task.getResult().size();
+                .addOnCompleteListener(task -> {
+                    numLoad= Objects.requireNonNull(task.getResult()).size();
                     for(QueryDocumentSnapshot documentSnapshot: Objects.requireNonNull(task.getResult())){
                         String name=(String)documentSnapshot.get(Local.firebaseLocal.NAME);
                         String content=(String)documentSnapshot.get(Local.firebaseLocal.CONTENT);
                         String urlImg=(String)documentSnapshot.get(Local.firebaseLocal.IMAGE);
                         //String keyDescription=(String)documentSnapshot.getId();
-                        DataAdapter dataAdapter=new DataAdapter(name,content,urlImg);
+                        DataAdapter dataAdapter= new DataAdapter(name, content, urlImg);
                         dataAdapters.add(dataAdapter);
                         addContentLayout(dataAdapter);
                     }
-
                 });
     }
-    protected class DataAdapter{
+    protected static class DataAdapter{
         public DataAdapter(String name, String content, String urlImg) {
             this.name = name;
             this.content = content;
@@ -265,10 +251,6 @@ public class ChangeDetailActivity extends AppCompatActivity {
             return urlImg;
         }
 
-        public void setUrlImg(String urlImg) {
-            this.urlImg = urlImg;
-        }
-
         private String name,content,urlImg;
     }
     @Override
@@ -277,15 +259,14 @@ public class ChangeDetailActivity extends AppCompatActivity {
         if(requestCode == Local.REQUEST_CODE_GET_IMAGE && resultCode == Activity.RESULT_OK) {
             assert data != null;
             if (Objects.requireNonNull(data.getExtras()).get(Local.BundleLocal.PATHIMAGE)!=null) {
-                currentPhotoPath = (String) data.getExtras().get(Local.BundleLocal.PATHIMAGE);
-                dataAdapters.get(offsetSelect).urlImg=currentPhotoPath;
+                String currentPhotoPath = (String) data.getExtras().get(Local.BundleLocal.PATHIMAGE);
+                dataAdapters.get(offsetSelect).urlImg= currentPhotoPath;
                 try {
-                    bitmap= BitmapFactory.decodeFile(currentPhotoPath);
+                    Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath);
                     iv_offsetImageSelect.setImageBitmap(bitmap);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
             }
         }
     }

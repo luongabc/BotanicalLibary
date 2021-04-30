@@ -3,24 +3,16 @@ package com.example.botanicallibrary.template;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import com.example.botanicallibrary.LoginActivity;
 import com.example.botanicallibrary.R;
 import com.example.botanicallibrary.SignUpActivity;
 import com.example.botanicallibrary.en.Local;
-import com.example.botanicallibrary.fragment.main.PrifileUserFragment;
 
 public class SettingDialog {
     private Activity activity;

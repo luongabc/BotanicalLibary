@@ -27,6 +27,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
+
 public class AddNewAnswerDialog {
     private Activity activity;
     private AlertDialog alertDialog;
@@ -39,7 +41,6 @@ public class AddNewAnswerDialog {
 
     public AddNewAnswerDialog(Activity activity,String idQuestion,String mail){
         if(activity==null) return;
-
         if(mail==null) return;
         this.activity=activity;
         this.idQuestion=idQuestion;
@@ -99,7 +100,7 @@ public class AddNewAnswerDialog {
                         documentSnapshots.addAll(Lists.newArrayList(task.getResult()));
                         adapterSub.notifyDataSetChanged();
                     } else {
-                        Toast.makeText(activity, "Get data fail", Toast.LENGTH_LONG).show();
+                        Toasty.error(activity,activity.getString(R.string.Error), Toast.LENGTH_SHORT, true).show();
                     }
                     loadingDialog.dismissDialog();
                 });
@@ -116,10 +117,10 @@ public class AddNewAnswerDialog {
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             SharedPreferences sp1=activity.getSharedPreferences(Local.DeviceLocal.NAMEDATADEVICE, Context.MODE_PRIVATE);
 
-            DatabaseReference myRef = database.getReference("Answers")
-                    .child(idQuestion).child(sp1.getString("id", null));
-            myRef.child("key").setValue(key);
-            myRef.child("Name").setValue(name);
+            DatabaseReference myRef = database.getReference(Local.firebaseLocal.ANSWERS)
+                    .child(idQuestion).child(sp1.getString(Local.DeviceLocal.ID, null));
+            myRef.child(Local.firebaseLocal.KEY).setValue(key);
+            myRef.child(Local.firebaseLocal.NAME).setValue(name);
             dismissDialog();
         }
     }

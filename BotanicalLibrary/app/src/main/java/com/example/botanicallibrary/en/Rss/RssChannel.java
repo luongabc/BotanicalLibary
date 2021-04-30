@@ -1,9 +1,10 @@
 package com.example.botanicallibrary.en.Rss;
 
-import java.util.List;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
+
+import java.util.List;
 
 @Root(name = "channel", strict = false)
 public class RssChannel

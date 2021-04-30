@@ -37,14 +37,6 @@
             app:srcCompat="@drawable/icon_geography_100" />
 
         <ImageView
-            android:id="@+id/iv_news"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/img"
-            app:srcCompat="@drawable/icon_new_100" />
-
-        <ImageView
             android:id="@+id/libraryPlant"
             android:layout_width="0dp"
             android:layout_height="match_parent"

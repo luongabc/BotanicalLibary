@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.botanicallibrary.fragment.main.LibraryFragment;
 import com.example.botanicallibrary.fragment.main.ListQuestionFragment;
-import com.example.botanicallibrary.fragment.main.NewsFragment;
 import com.example.botanicallibrary.fragment.main.PrifileUserFragment;
 import com.example.botanicallibrary.fragment.main.RealizePlantFragment;
 
@@ -24,24 +23,14 @@ public class ScreenMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ImageView imageViewRealize=findViewById(R.id.realizePlant);
         ImageView library =findViewById(R.id.libraryPlant);
-        ImageView news=findViewById(R.id.iv_news);
         ImageView userProfile=findViewById(R.id.profile);
         ImageView question =findViewById(R.id.iv_question);
 
-        selected="NEWS";
+        selected="LIBRARY";
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
-                .add(R.id.fragment, NewsFragment.class,null)
+                .add(R.id.fragment, LibraryFragment.class,null)
                 .commit();
-
-        news.setOnClickListener(v -> {
-            if(selected.equals("NEWS")) return;
-            selected="NEWS";
-            getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.fragment, NewsFragment.class,null)
-                    .commit();
-        });
 
         userProfile.setOnClickListener(v -> {
             if(selected.equals("PRIFILE")) return;

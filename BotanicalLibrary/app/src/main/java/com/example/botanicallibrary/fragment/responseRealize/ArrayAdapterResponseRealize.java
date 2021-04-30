@@ -12,12 +12,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.bea.xml.stream.samples.Parse;
 import com.example.botanicallibrary.R;
 import com.example.botanicallibrary.en.DataListViewResponseRealize;
 import com.example.botanicallibrary.en.Local;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;

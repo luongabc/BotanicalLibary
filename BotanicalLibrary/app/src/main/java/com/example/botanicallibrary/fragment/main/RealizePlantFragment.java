@@ -7,10 +7,6 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +17,16 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.example.botanicallibrary.Interface.RetrofitAPI;
-import com.example.botanicallibrary.bl.Data;
-import com.example.botanicallibrary.bl.LoadingDialog;
 import com.example.botanicallibrary.R;
 import com.example.botanicallibrary.ResponseRealizeActivity;
 import com.example.botanicallibrary.SelectImage;
+import com.example.botanicallibrary.bl.Data;
+import com.example.botanicallibrary.bl.LoadingDialog;
 import com.example.botanicallibrary.en.DataListViewResponseRealize;
 import com.example.botanicallibrary.en.Local;
 import com.example.botanicallibrary.en.PlantPost;

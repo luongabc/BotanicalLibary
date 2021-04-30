@@ -11,10 +11,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
 
+import com.canhub.cropper.CropImageView;
 import com.example.botanicallibrary.bl.FileUtils;
 import com.example.botanicallibrary.bl.Permission;
 import com.example.botanicallibrary.en.Local;
@@ -23,7 +25,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
 
@@ -31,7 +32,7 @@ public class SelectImage extends Activity {
     private int  imgWidth, imgQuality ;
     private final String TYPEIMAGE="image/*";
     private String currentPhotoPath, imageFileName;
-
+    private CropImageView cropImageView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +40,30 @@ public class SelectImage extends Activity {
         imgWidth=bundle.getInt(Local.BundleLocal.WIDTH);
         imgQuality=bundle.getInt(Local.BundleLocal.QUALITY);
 
+
         setContentView(R.layout.activity_select_image);
+        cropImageView=findViewById(R.id.cropImageView);
+        ImageView iv_ok=findViewById(R.id.iv_ok);
+        ImageView iv_rotation=findViewById(R.id.iv_rotation);
+        iv_rotation.setOnClickListener(v->{
+            cropImageView.rotateImage(90);
+        });
+        iv_ok.setOnClickListener(v->{
+            if(currentPhotoPath==null) finish();
+            else {
+                Bitmap cropped = cropImageView.getCroppedImage();
+                try {
+                    currentPhotoPath = createImageFile(null);
+                    File smallImage = new File(currentPhotoPath);
+                    FileOutputStream fileOutputStream = new FileOutputStream(smallImage);
+                    cropped.compress(Bitmap.CompressFormat.JPEG, this.imgQuality, fileOutputStream);
+                } catch (Exception e) {
+                    Toasty.error(getBaseContext(), getString(R.string.Error), Toast.LENGTH_LONG, true).show();
+                }
+
+                finish();
+            }
+        });
         ImageButton btnCamera = findViewById(R.id.camera);
         ImageButton btnGallery = findViewById(R.id.gallery);
         btnCamera.setOnClickListener(v ->{
@@ -68,16 +92,18 @@ public class SelectImage extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==Local.REQUEST_CODE_CAMERA && resultCode==Activity.RESULT_OK){
             galleryAddPic();
+            cropImageView.setImageBitmap( BitmapFactory.decodeFile(currentPhotoPath));
         }
         else if(requestCode==Local.REQUEST_CODE_GALLERY && resultCode==Activity.RESULT_OK){
             currentPhotoPath=(new FileUtils(getBaseContext())).getPath(data.getData());
+            cropImageView.setImageBitmap( BitmapFactory.decodeFile(currentPhotoPath));
         }
-        if(this.imgWidth>0)setPic();
-        finish();
+
     }
 
     @Override
     public void finish() {
+        if(this.imgWidth>0)setPic();
         Intent intent=new Intent();
         intent.putExtra(Local.BundleLocal.PATHIMAGE,currentPhotoPath);
         setResult(RESULT_OK,intent);
@@ -138,7 +164,6 @@ public class SelectImage extends Activity {
             FileOutputStream fileOutputStream = new FileOutputStream(smallImage);
             bitmap.compress(Bitmap.CompressFormat.JPEG,this.imgQuality,fileOutputStream);
         }catch (Exception e){
-            System.out.println(e.getMessage());
             Toasty.error(getBaseContext(), getString(R.string.Error), Toast.LENGTH_LONG, true).show();
         }
     }

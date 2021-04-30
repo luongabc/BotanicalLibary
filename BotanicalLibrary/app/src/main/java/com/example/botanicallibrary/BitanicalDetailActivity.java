@@ -1,9 +1,5 @@
 package com.example.botanicallibrary;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,11 +7,14 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.botanicallibrary.fragment.infoBotanical.BotanicalDescriptionFragment;
 import com.example.botanicallibrary.fragment.infoBotanical.LinkParentFragment;
 import com.example.botanicallibrary.fragment.infoBotanical.ListImageFragment;
 import com.example.botanicallibrary.fragment.infoBotanical.MapsWebViewFragment;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Objects;

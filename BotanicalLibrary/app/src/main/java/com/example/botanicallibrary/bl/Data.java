@@ -1,15 +1,10 @@
 package com.example.botanicallibrary.bl;
 
 import com.example.botanicallibrary.Interface.RetrofitAPI;
-import com.example.botanicallibrary.en.DataListViewResponseRealize;
 import com.example.botanicallibrary.en.Local;
 import com.example.botanicallibrary.en.response.ResponseSpecie;
-import com.example.botanicallibrary.en.response.demosetdata.ResponseSetData;
-import com.example.botanicallibrary.en.response.demosetdata.Result;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;

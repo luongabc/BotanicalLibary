@@ -24,7 +24,6 @@ import com.example.botanicallibrary.bl.LoadingDialog;
 import com.example.botanicallibrary.en.Local;
 import com.example.botanicallibrary.template.LibraryAdapter;
 import com.google.common.collect.Lists;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -41,10 +40,10 @@ public class LibraryFragment extends Fragment {
 
     private List<QueryDocumentSnapshot> documentSnapshots;
     protected LoadingDialog loadingDialog;
-    private static final String[] filtDatta = new String[]{Local.SPECIES, Local.GENUS, Local.FAMILY, Local.ORDER, Local.PHYLUM, Local.CLASS, ""};
-    private static final String[] filtDatta_vi = new String[]{"Loài", "Chi", "Họ", "Bộ", "Ngành","Lớp", ""};
+    private static final String[] filtDatta = new String[]{Local.SPECIES, Local.GENUS, Local.FAMILY, Local.ORDER, Local.PHYLUM, Local.CLASS};
+    private static final String[] filtDatta_vi = new String[]{"Loài", "Chi", "Họ", "Bộ", "Ngành","Lớp"};
     private boolean bl_loadmore=false;
-    private CollectionReference colRef;
+    private String strFilt,strSearch;
 
     public LibraryFragment() {
         // Required empty public constructor
@@ -65,13 +64,10 @@ public class LibraryFragment extends Fragment {
         ArrayAdapter<String> filtAdapter = new ArrayAdapter<>(view.getContext(), R.layout.support_simple_spinner_dropdown_item, filtDatta_vi);
         filtAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinnerFilt.setAdapter(filtAdapter);
-
+        strFilt="";
+        strSearch="";
         EditText et_search = view.findViewById(R.id.et_search);
         ImageButton btn_search = view.findViewById(R.id.btn_search);
-
-        FirebaseFirestore ff = FirebaseFirestore.getInstance();
-        colRef = ff.collection(Local.BOTANICALS);
-
         btn_search.setOnClickListener(v ->
                 onLoadMore(spinnerFilt.getSelectedItem().toString(),
                 et_search.getText().toString(),
@@ -106,7 +102,7 @@ public class LibraryFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 et_search.setText("");
                 onLoadMore(filtDatta[spinnerFilt.getSelectedItemPosition()],
-                        null,
+                        "",
                         -1);
             }
 
@@ -118,20 +114,28 @@ public class LibraryFragment extends Fragment {
     }
 
     public void onLoadMore(String rank, String search, int offset) {
+        FirebaseFirestore ff = FirebaseFirestore.getInstance();
+        boolean reset=false;
+        if(search==null) search="";
+        if(rank==null) rank="";
         loadingDialog.startDialog(rank);
-        Query qr = colRef.limit(Local.LIMIT);
-
-        //load more or reload
-        if(offset > -1)qr = qr.startAfter(documentSnapshots.get(offset));
-
+        Query qr = ff.collection(Local.BOTANICALS).limit(Local.LIMIT);
         //load by class or search text
-        if (search == null || search.equals("")) qr = qr.whereEqualTo(Local.RANK, rank);
-        else
-            qr = qr.orderBy(Local.NAMEDEFAULT)
+        if (search.equals("")) qr = qr.whereEqualTo(Local.RANK, rank);
+        else qr = qr.orderBy(Local.NAMEDEFAULT)
                     .startAt(search)
                     .endAt(search + "\uf8ff");
-
+        if(offset > -1)qr = qr.startAfter(documentSnapshots.get(offset));
+        if(!strFilt.equals(rank)) {
+            strFilt=rank;
+            reset=true;
+        }
+        if(!strSearch.equals(search)) {
+            strSearch=search;
+            reset=true;
+        }
         //load data
+        boolean finalReset = reset;
         qr.get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -139,7 +143,8 @@ public class LibraryFragment extends Fragment {
                             loadingDialog.dismissDialog();
                             return;
                         }
-                        addapterSub.notifyItemRemoved(documentSnapshots.size());
+                        //addapterSub.notifyItemRemoved(documentSnapshots.size());
+                        if(finalReset) documentSnapshots.clear();
                         documentSnapshots.addAll(Lists.newArrayList(task.getResult()));
                         addapterSub.notifyDataSetChanged();
                     } else {

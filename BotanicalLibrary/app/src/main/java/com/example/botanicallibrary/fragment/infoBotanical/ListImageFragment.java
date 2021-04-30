@@ -1,15 +1,14 @@
 package com.example.botanicallibrary.fragment.infoBotanical;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+
+import androidx.fragment.app.Fragment;
 
 import com.example.botanicallibrary.Interface.RetrofitAPI;
 import com.example.botanicallibrary.R;

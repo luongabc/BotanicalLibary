@@ -1,6 +1,5 @@
 package com.example.botanicallibrary.bl;
 
-import android.content.Context;
 import android.webkit.JavascriptInterface;
 
 public class WeAppInterface {
